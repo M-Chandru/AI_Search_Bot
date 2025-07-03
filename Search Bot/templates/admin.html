@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Document Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #9b59b6;
+      --danger: #e74c3c;
+      --danger-dark: #c0392b;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --light: #f8f9fa;
+      --dark: #2c3e50;
+      --gray: #95a5a6;
+      --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%);
+      color: var(--dark);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .dashboard {
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      animation: slideDown 0.5s ease-out;
+    }
+    
+    .header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  background-clip: text;                  /* ✅ Added */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+
+    }
+    
+    .header a {
+      background: var(--danger);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.25);
+    }
+    
+    .header a:hover {
+      background: var(--danger-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(231, 76, 60, 0.35);
+    }
+    
+    /* Card Styles */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+    
+    .card:nth-child(2)::before {
+      background: linear-gradient(to bottom, var(--secondary), #8e44ad);
+    }
+    
+    .card:nth-child(3)::before {
+      background: linear-gradient(to bottom, var(--success), #27ae60);
+    }
+    
+    .card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+      padding-left: 5px;
+    }
+    
+    input[type="file"],
+    select,
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="file"]:focus,
+    select:focus,
+    textarea:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    button, .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(52, 152, 219, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    button:hover, .btn:hover {
+      background: linear-gradient(90deg, var(--primary-dark), #1f618d);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(41, 128, 185, 0.35);
+    }
+    
+    .btn-delete {
+      background: linear-gradient(90deg, var(--danger), var(--danger-dark));
+      box-shadow: 0 4px 14px rgba(231, 76, 60, 0.25);
+    }
+    
+    .btn-delete:hover {
+      background: linear-gradient(90deg, var(--danger-dark), #a5271b);
+      box-shadow: 0 6px 18px rgba(192, 57, 43, 0.35);
+    }
+    
+    /* Status Messages */
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .success {
+      background: #eafaf1;
+      color: #218838;
+      border-left: 4px solid #28a745;
+    }
+    
+    .error {
+      background: #fcebea;
+      color: #c82333;
+      border-left: 4px solid #dc3545;
+    }
+    
+    /* Response Box */
+    #responseBox {
+      background: #f0f8ff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 1.05rem;
+      color: #333;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      border: 1px solid #cce5ff;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+      
+      .header h1 {
+        justify-content: center;
+      }
+      
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* File Selector */
+    .file-selector {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .file-selector select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    
+    /* Decorative Elements */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(52, 152, 219, 0.08);
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="header">
+      <h1><i class="fas fa-file-search"></i> AI Document Assistant Admin</h1>
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    
+    <div class="card-grid">
+      <!-- Upload Document -->
+      <div class="card">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Upload New Document</h3>
+        <form id="uploadForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="file">Select Document</label>
+            <input type="file" name="file" id="file" required>
+          </div>
+          <button type="submit"><i class="fas fa-upload"></i> Upload Document</button>
+          <div id="uploadStatus" class="status"></div>
+        </form>
+      </div>
+      
+      <!-- Manage Documents -->
+      <div class="card">
+        <h3><i class="fas fa-folder-open"></i> Manage Documents</h3>
+        <div class="form-group file-selector">
+          <label for="fileList">Select Document</label>
+          <select id="fileList" class="file-selector">
+            <option value="">Loading documents...</option>
+          </select>
+        </div>
+        <button class="btn-delete" onclick="deleteFile()">
+          <i class="fas fa-trash-alt"></i> Delete Selected
+        </button>
+        <div id="deleteStatus" class="status"></div>
+      </div>
+    </div>
+    
+    <!-- Ask Question -->
+    <div class="card">
+      <h3><i class="fas fa-question-circle"></i> Ask About Documents</h3>
+      <form id="askForm">
+        <div class="form-group">
+          <label for="question">Enter your question</label>
+          <textarea name="question" id="question" placeholder="Type your question here..." required></textarea>
+        </div>
+        <button type="submit"><i class="fas fa-search"></i> Get Answer</button>
+      </form>
+      <div id="responseBox"></div>
+    </div>
+  </div>
+
+  <script>
+    // Upload document
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const status = document.getElementById("uploadStatus");
+      status.innerHTML = '<div class="spinner"></div> Uploading...';
+      status.className = "status";
+      
+      try {
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: new FormData(e.target)
+        });
+        const data = await response.json();
+        
+        status.innerHTML = data.message || data.error;
+        status.className = data.message ? "status success" : "status error";
+        if (data.message) {
+          status.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+          loadFileList();
+        } else {
+          status.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.error}`;
+        }
+      } catch (error) {
+        status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Upload failed. Please try again.`;
+        status.className = "status error";
+      }
+    });
+
+    // Delete document
+    async function deleteFile() {
+      const filename = document.getElementById("fileList").value;
+      if (!filename) return;
+      
+      const status = document.getElementById("deleteStatus");
+      status.innerHTML = '<div class="spinner"></div> Deleting...';
+      status.className = "status";
+      
+      try {
+        const formData = new FormData();
+        formData.append("filename", filename);
+        
+        const response = await fetch("/delete", { 
+          method: "POST", 
+          body: formData 
+        });
+        const data = await response.json();
+        
+        if (data.message) {
+          status.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+          status.className = "status success";
+          loadFileList();
+        } else {
+          status.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.error}`;
+          status.className = "status error";
+        }
+      } catch (error) {
+        status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Deletion failed. Please try again.`;
+        status.className = "status error";
+      }
+    }
+
+    // Ask question
+    document.getElementById("askForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const responseBox = document.getElementById("responseBox");
+      responseBox.innerHTML = '<div class="spinner"></div> Analyzing documents...';
+      
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          body: new FormData(e.target)
+        });
+        const data = await response.json();
+        
+        if (data.answer) {
+          responseBox.innerHTML = `<div class="answer"><i class="fas fa-comment-alt"></i> ${data.answer}</div>`;
+        } else {
+          responseBox.innerHTML = `<div class="no-answer"><i class="fas fa-exclamation-triangle"></i> Sorry, I couldn't find an answer.</div>`;
+        }
+      } catch (error) {
+        responseBox.innerHTML = `<div class="error-msg"><i class="fas fa-exclamation-circle"></i> Failed to get answer. Please try again.</div>`;
+      }
+    });
+
+    // Load file list
+    async function loadFileList() {
+      try {
+        const response = await fetch("/list");
+        const data = await response.json();
+        const fileList = document.getElementById("fileList");
+        
+        fileList.innerHTML = "";
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(file => {
+            const option = document.createElement("option");
+            option.value = file;
+            option.textContent = file;
+            fileList.appendChild(option);
+          });
+        } else {
+          const option = document.createElement("option");
+          option.textContent = "No documents found";
+          option.disabled = true;
+          fileList.appendChild(option);
+        }
+      } catch (error) {
+        console.error("Failed to load file list:", error);
+        const fileList = document.getElementById("fileList");
+        fileList.innerHTML = '<option value="">Error loading documents</option>';
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener("load", loadFileList);
+  </script>
+</body>
+</html>

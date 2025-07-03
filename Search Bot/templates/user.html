@@ -1,0 +1,222 @@
+<!--user.html-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Document Assistant</title>
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    
+    body {
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    
+    /* Layout */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      animation: slideDown 0.4s ease-out;
+    }
+    
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #1e40af;
+    }
+    
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .logout-btn:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+    
+    /* Question Box */
+    .question-box {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .question-box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .question-box h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #1e40af;
+    }
+    
+    /* Form Elements */
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      min-height: 150px;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .submit-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    
+    /* Response Box */
+    .response-box {
+      background: #f0f9ff;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      margin-top: 1.5rem;
+      border-left: 4px solid #3b82f6;
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    .loading {
+      color: #64748b;
+      font-style: italic;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AI Document Assistant</h1>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+    
+    <div class="question-box">
+      <h2>Ask Your Question</h2>
+      <form id="askForm">
+        <textarea 
+          name="question" 
+          placeholder="What would you like to know about your documents?" 
+          required
+        ></textarea>
+        <button type="submit" class="submit-btn">Get Answer</button>
+      </form>
+      <div id="responseBox" class="response-box"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("askForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const responseBox = document.getElementById("responseBox");
+      const question = this.elements.question.value.trim();
+      
+      if (!question) return;
+      
+      // Show loading state
+      responseBox.style.display = "block";
+      responseBox.innerHTML = '<div class="loading"><span class="spinner"></span> Searching for your answer...</div>';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch("/ask", { 
+          method: "POST", 
+          body: formData 
+        });
+        
+        const data = await response.json();
+        responseBox.innerHTML = data.answer || "I couldn't find an answer to that question in your documents.";
+        
+      } catch (error) {
+        responseBox.innerHTML = "Sorry, there was an error processing your request. Please try again.";
+        console.error("Error:", error);
+      }
+    });
+  </script>
+</body>
+</html>
